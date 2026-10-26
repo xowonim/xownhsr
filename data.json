@@ -24,7 +24,13 @@
     {
       "id": "2lbcful",
       "type": "gallery",
-      "items": []
+      "items": [
+        {
+          "image": "",
+          "title": "",
+          "link": ""
+        }
+      ]
     }
   ],
   "buttons": [
