@@ -1,0 +1,28 @@
+{
+  "siteTitle": "",
+  "showButtons": false,
+  "profile": {
+    "icon": "",
+    "name": "이름",
+    "en": "@id",
+    "jp": ""
+  },
+  "blocks": [],
+  "buttons": [
+    {
+      "icon": "",
+      "label": "갤러리",
+      "link": ""
+    },
+    {
+      "icon": "",
+      "label": "스핀스핀",
+      "link": ""
+    },
+    {
+      "icon": "",
+      "label": "준비 중",
+      "link": ""
+    }
+  ]
+}
