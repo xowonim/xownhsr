@@ -30,9 +30,10 @@ button{font-family:inherit}
 /* top bar */
 .gear{
   position:fixed;top:14px;right:14px;width:42px;height:42px;border-radius:50%;
-  border:1.5px solid rgba(255,255,255,.85);background:none;color:#fff;display:grid;place-items:center;cursor:pointer;z-index:20;
+  border:1px solid rgba(255,255,255,.85);background:none;color:#fff;display:flex;align-items:center;justify-content:center;padding:0;line-height:0;cursor:pointer;z-index:20;
 }
 .gear:active{transform:scale(.94)}
+.gear svg{display:block}
 .status{
   position:fixed;top:20px;left:16px;font-size:12px;color:#fff;background:rgba(0,0,0,.25);
   padding:6px 12px;border-radius:999px;z-index:20;display:none;align-items:center;gap:6px;
@@ -89,11 +90,11 @@ button{font-family:inherit}
 .sns{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
 .sns.top{margin-top:26px;margin-bottom:0}
 .bbtn{
-  background:var(--card);border-radius:18px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:10px;
+  background:var(--card);border-radius:18px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:8px;
   text-decoration:none;color:var(--ink);font-size:13px;font-weight:600;min-width:0;
 }
 a.bbtn:active{transform:scale(.97)}
-.b-icon{width:100%;aspect-ratio:1/1;border-radius:18px}
+.b-icon{width:100%;aspect-ratio:1/1;border-radius:0}
 .b-label{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* editing UI */
@@ -101,7 +102,7 @@ a.bbtn:active{transform:scale(.97)}
   width:100%;height:56px;border:1.5px solid var(--edge);background:transparent;color:var(--mut);
   border-radius:0;display:grid;place-items:center;cursor:pointer
 }
-.eblock{border:1px solid var(--edge);border-radius:0;padding:12px;display:flex;flex-direction:column;gap:10px;text-align:center;background:none}
+.eblock{border:1px solid var(--edge);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;text-align:center;background:none}
 .ehead{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--ink)}
 .ehead .lbl{opacity:.7}
 .ehead .btns{display:flex;gap:2px}
@@ -125,16 +126,16 @@ a.bbtn:active{transform:scale(.97)}
 }
 .pick.r169{aspect-ratio:16/9}
 .pick.r11{aspect-ratio:1/1}
-.pick.ic{width:100%;aspect-ratio:1/1;border-radius:18px;border:1.5px solid var(--edge);color:var(--mut)}
+.pick.ic{width:100%;aspect-ratio:1/1;border-radius:0;border:1.5px solid var(--edge);color:var(--mut)}
 .g-edit{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-items:start}
 .cell{background:none;display:flex;flex-direction:column;gap:4px;min-width:0}
 .eblock .cell .in{border:0;background:transparent;font-size:12px;padding:5px 4px;text-align:center}
-.cell .row{display:flex;gap:0;justify-content:center}
+.cell .row{display:flex;gap:18px;justify-content:center;margin-top:4px}
 .addcell{border:0;background:transparent;color:var(--mut);border-radius:0;aspect-ratio:1/1;width:100%;align-self:start;display:grid;place-items:center;cursor:pointer;padding:0}
 .addcell.solo{aspect-ratio:auto;width:auto;padding:10px 28px}
 .g-empty{display:grid;place-items:center;padding:14px 0}
-.bcard{background:var(--card);border-radius:18px;padding:12px 8px;display:flex;flex-direction:column;gap:8px;min-width:0}
-.bcard .in{background:transparent;border:1px solid var(--edge);color:var(--ink);font-size:12px;padding:6px 8px}
+.bcard{background:var(--card);border-radius:18px;padding:8px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.bcard .in{background:transparent;border:0;color:var(--ink);font-size:12px;padding:6px 8px}
 @media(max-width:480px){.sns.editing{grid-template-columns:1fr}}
 
 /* overlay / modal */
@@ -168,6 +169,10 @@ a.bbtn:active{transform:scale(.97)}
 .seg button{background:none;border:0;position:relative;z-index:1;font-size:12px;font-weight:600;padding:5px 0;color:var(--ink);cursor:pointer}
 .seg .thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);background:var(--box);border-radius:999px;transition:transform .25s}
 .seg.r .thumb{transform:translateX(100%)}
+
+.swatch{width:120px;height:32px;border-radius:8px;border:1px solid var(--edge);padding:0;cursor:pointer}
+.sheet.small.cw{gap:12px}
+.cw-pick{width:100%;height:56px;border:1px solid var(--edge);border-radius:10px;padding:2px;background:none;cursor:pointer}
 
 /* lightbox */
 .lb{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:60;display:grid;place-items:center;cursor:zoom-out}
@@ -233,6 +238,31 @@ function normLink(u) {
   return 'https://' + u;
 }
 
+/* ---------- 색상 ---------- */
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+function normHex(v) {
+  v = (v || '').trim().replace('#', '');
+  if (/^[0-9a-f]{3}$/i.test(v)) v = v.split('').map(c => c + c).join('');
+  return /^[0-9a-f]{6}$/i.test(v) ? '#' + v.toLowerCase() : '';
+}
+function hexToHsl(hex) {
+  const r = parseInt(hex.slice(1, 3), 16) / 255, g = parseInt(hex.slice(3, 5), 16) / 255, b = parseInt(hex.slice(5, 7), 16) / 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
+  let h = 0, s = 0;
+  if (d) {
+    s = d / (1 - Math.abs(2 * l - 1));
+    if (mx === r) h = ((g - b) / d) % 6; else if (mx === g) h = (b - r) / d + 2; else h = (r - g) / d + 4;
+    h *= 60; if (h < 0) h += 360;
+  }
+  return { h, s, l };
+}
+function hsl(h, s, l) { return `hsl(${Math.round(h)},${Math.round(s * 100)}%,${Math.round(l * 100)}%)`; }
+function hslHex(h, s, l) {
+  const a = s * Math.min(l, 1 - l);
+  const f = n => { const k = (n + h / 30) % 12; return Math.round(255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)))).toString(16).padStart(2, '0'); };
+  return '#' + f(0) + f(8) + f(4);
+}
+
 /* ---------- 아이콘 ---------- */
 const IC = {
   up: '<path d="M12 19V5M5 12l7-7 7 7"/>',
@@ -276,6 +306,7 @@ const defaults = () => ({
   siteTitle: '',
   showButtons: false,
   buttonsPos: 'bottom',
+  bgColor: '',
   profile: { icon: '', name: '', en: '' },
   blocks: [],
   buttons: [
@@ -292,6 +323,7 @@ function merge(d) {
     siteTitle: typeof d.siteTitle === 'string' ? d.siteTitle : '',
     showButtons: !!d.showButtons,
     buttonsPos: d.buttonsPos === 'top' ? 'top' : 'bottom',
+    bgColor: /^#[0-9a-f]{6}$/i.test(d.bgColor || '') ? d.bgColor : '',
     profile: { ...base.profile, ...(d.profile || {}) },
     blocks: Array.isArray(d.blocks) ? d.blocks : base.blocks,
     buttons: [0, 1, 2].map(i => ({ ...base.buttons[i], ...(btns[i] || {}) }))
@@ -681,6 +713,7 @@ function picker(path, cls, cb, opt, crop) {
 /* ---------- 렌더링 ---------- */
 function render() {
   const y = window.scrollY;
+  applyPalette();
   const app = $('#app');
   app.innerHTML = '';
   app.append(renderProfile());
@@ -782,7 +815,7 @@ function move(arr, i, d) {
   [arr[i], arr[j]] = [arr[j], arr[i]];
   touch(); render();
 }
-const ib = (name, label, fn, sz = 18) => h('button', { class: 'ib', type: 'button', 'aria-label': label, html: ico(name, 3, sz), onclick: fn });
+const ib = (name, label, fn, sz = 18, sw = 3) => h('button', { class: 'ib', type: 'button', 'aria-label': label, html: ico(name, sw, sz), onclick: fn });
 function editBlock(b, i) {
   const names = { text: '텍스트 상자', illust: '일러스트 상자', gallery: '갤러리 상자' };
   const head = h('div', { class: 'ehead' }, h('span', { class: 'lbl' }, names[b.type]),
@@ -819,9 +852,9 @@ function editBlock(b, i) {
         bind(h('input', { class: 'in', placeholder: '제목' }), it, 'title'),
         bind(h('input', { class: 'in', placeholder: '링크' }), it, 'link'),
         h('div', { class: 'row' },
-          ib('left', '앞으로', () => move(b.items, k, -1), 16),
-          ib('right', '뒤로', () => move(b.items, k, 1), 16),
-          ib('x', '삭제', () => { b.items.splice(k, 1); touch(); render(); }, 16))));
+          ib('left', '앞으로', () => move(b.items, k, -1), 13, 2),
+          ib('right', '뒤로', () => move(b.items, k, 1), 13, 2),
+          ib('x', '삭제', () => { b.items.splice(k, 1); touch(); render(); }, 13, 2))));
     });
     const addItem = () => { b.items.push({ image: '', title: '', link: '' }); touch(); render(); };
     if (!b.items.length) {
@@ -869,10 +902,35 @@ document.addEventListener('click', e => { const s = e.target.closest('.spoiler')
 document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.classList?.contains('spoiler')) e.target.classList.toggle('revealed'); });
 
 /* ---------- 테마 ---------- */
+function applyPalette() {
+  const root = document.documentElement, dark = root.dataset.theme === 'dark';
+  ['--bg', '--accent', '--soft', '--line', '--edge', '--mut', '--box', '--card'].forEach(k => root.style.removeProperty(k));
+  const set = (k, v) => root.style.setProperty(k, v);
+  let meta = dark ? '#243225' : '#8aad78';
+  const c = data.bgColor;
+  if (c) {
+    const { h, s } = hexToHsl(c);
+    const vivid = s < 0.08 ? s : clamp(s, 0.3, 0.6);
+    if (!dark) {
+      set('--bg', c); meta = c;
+      set('--accent', hsl(h, vivid, 0.28));
+      set('--soft', hsl(h, 0.22, 0.95)); set('--line', hsl(h, 0.14, 0.89));
+      set('--edge', hsl(h, 0.1, 0.79)); set('--mut', hsl(h, 0.08, 0.62));
+    } else {
+      const ds = s < 0.08 ? s : clamp(s * 0.6, 0.1, 0.28);
+      set('--bg', hsl(h, ds, 0.16)); meta = hslHex(h, ds, 0.16);
+      set('--accent', hsl(h, s < 0.08 ? s : clamp(s, 0.35, 0.55), 0.7));
+      set('--box', hsl(h, 0.14, 0.11)); set('--card', hsl(h, 0.14, 0.11));
+      set('--soft', hsl(h, 0.12, 0.15)); set('--line', hsl(h, 0.12, 0.19));
+      set('--edge', hsl(h, 0.1, 0.26)); set('--mut', hsl(h, 0.08, 0.45));
+    }
+  }
+  document.querySelector('meta[name=theme-color]').content = meta;
+}
 function setTheme(t) {
   document.documentElement.dataset.theme = t;
   localStorage.setItem('lk_theme', t);
-  document.querySelector('meta[name=theme-color]').content = t === 'dark' ? '#243225' : '#8aad78';
+  applyPalette();
 }
 setTheme(localStorage.getItem('lk_theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
 
@@ -955,6 +1013,24 @@ function openSettings() {
     h('button', { type: 'button', onclick: () => setPos('top') }, '상단'),
     h('button', { type: 'button', onclick: () => setPos('bottom') }, '하단'));
   function setPos(p) { data.buttonsPos = p; seg.classList.toggle('r', p === 'bottom'); touch(); render(); }
+  const swatch = h('button', { class: 'swatch', type: 'button', 'aria-label': '배경색', style: `background:${data.bgColor || '#8aad78'}` });
+  swatch.onclick = () => {
+    const base = data.bgColor || '#8aad78';
+    const ov2 = h('div', { class: 'ov', style: 'z-index:55', onclick: e => { if (e.target === ov2) ov2.remove(); } });
+    const pickIn = h('input', { type: 'color', class: 'cw-pick' });
+    pickIn.value = base;
+    const codeIn = h('input', { class: 'in', placeholder: '#8aad78', maxlength: '7', style: 'text-align:center' });
+    codeIn.value = base;
+    const apply = hex => { data.bgColor = hex; swatch.style.background = hex || '#8aad78'; applyPalette(); touch(); };
+    pickIn.addEventListener('input', () => { codeIn.value = pickIn.value; apply(pickIn.value); });
+    codeIn.addEventListener('input', () => { const v = normHex(codeIn.value); if (v) { pickIn.value = v; apply(v); } });
+    ov2.append(h('div', { class: 'sheet small cw' },
+      h('h2', {}, '배경색'), pickIn, codeIn,
+      h('div', { class: 'row2' },
+        h('button', { class: 'btn ghost', type: 'button', onclick: () => { pickIn.value = '#8aad78'; codeIn.value = '#8aad78'; apply(''); } }, '기본값'),
+        h('button', { class: 'btn', type: 'button', onclick: () => ov2.remove() }, '확인'))));
+    document.body.append(ov2);
+  };
   const sheet = h('div', { class: 'sheet' },
     h('h2', {}, '설정'),
     h('div', { class: 'srow' }, h('span', {}, '다크 모드'), sw(document.documentElement.dataset.theme === 'dark', v => setTheme(v ? 'dark' : 'light'))),
@@ -962,6 +1038,7 @@ function openSettings() {
     has && h('div', { class: 'srow' }, h('span', {}, '사이트명'), titleIn),
     has && h('div', { class: 'srow' }, h('span', {}, 'SNS 버튼'),
       h('div', { class: 'ctl' }, seg, sw(data.showButtons, v => { data.showButtons = v; touch(); render(); }))),
+    has && h('div', { class: 'srow' }, h('span', {}, '배경색'), swatch),
     sec);
   ov.append(sheet);
   document.body.append(ov);
