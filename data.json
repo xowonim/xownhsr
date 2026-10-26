@@ -18,9 +18,16 @@
     {
       "id": "9as54d0",
       "type": "illust",
-      "image": "",
+      "image": "images/1792992683861-2nhqo5d.png",
       "title": "",
-      "link": ""
+      "link": "",
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "w": 1,
+        "h": 1,
+        "ar": 1.7778
+      }
     },
     {
       "id": "ab3zhza",
