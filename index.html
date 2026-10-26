@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#8aad78">
-<title>raetim</title>
+<title>링크</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
 :root{
@@ -218,8 +218,10 @@ function md(src) {
 
 /* ---------- 상태 ---------- */
 const defaults = () => ({
-  profile: { icon: '', name: '태림', en: 'raetim', jp: '' },
-  blocks: [{ id: uid(), type: 'text', text: '안녕하세요.\n설정에서 **편집 모드**를 켜면 이 상자를 수정할 수 있어요.' }],
+  siteTitle: '',
+  showButtons: false,
+  profile: { icon: '', name: '이름', en: '@id', jp: '' },
+  blocks: [],
   buttons: [
     { icon: '', label: '갤러리', link: '' },
     { icon: '', label: '스핀스핀', link: '' },
@@ -231,6 +233,8 @@ function merge(d) {
   d = d || {};
   const btns = Array.isArray(d.buttons) ? d.buttons : [];
   return {
+    siteTitle: typeof d.siteTitle === 'string' ? d.siteTitle : '',
+    showButtons: !!d.showButtons,
     profile: { ...base.profile, ...(d.profile || {}) },
     blocks: Array.isArray(d.blocks) ? d.blocks : base.blocks,
     buttons: [0, 1, 2].map(i => ({ ...base.buttons[i], ...(btns[i] || {}) }))
@@ -249,6 +253,10 @@ function loadCfg() {
   c.path = c.path || 'data.json';
   return c;
 }
+if (localStorage.getItem('lk_ver') !== '2') {
+  ['lk_cache', 'lk_draft', 'lk_dirty', 'lk_cfg'].forEach(k => localStorage.removeItem(k));
+  localStorage.setItem('lk_ver', '2');
+}
 let cfg = loadCfg();
 let data = defaults();
 let sha = null, dirty = false, saving = false, timer = null;
@@ -259,7 +267,8 @@ const pending = new Map();
 
 /* ---------- GitHub ---------- */
 function gh(path, opt = {}) {
-  return fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/${path}`, {
+  const base = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}`;
+  return fetch(path ? `${base}/${path}` : base, {
     cache: 'no-store',
     ...opt,
     headers: {
@@ -411,7 +420,9 @@ function render() {
   const y = window.scrollY;
   const app = $('#app');
   app.innerHTML = '';
-  app.append(renderProfile(), renderBox(), renderButtons());
+  app.append(renderProfile(), renderBox());
+  if (data.showButtons) app.append(renderButtons());
+  document.title = data.siteTitle || '링크';
   $('#status').classList.toggle('on', !!token() && editing);
   window.scrollTo(0, y);
 }
@@ -584,6 +595,13 @@ function setTheme(t) {
 setTheme(localStorage.getItem('lk_theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
 
 /* ---------- 설정 ---------- */
+function urlRepo() {
+  const host = location.hostname;
+  if (!host.endsWith('.github.io')) return null;
+  const owner = host.split('.')[0];
+  const seg = location.pathname.split('/')[1];
+  return { owner, repo: seg && !seg.includes('.') ? seg : `${owner}.github.io` };
+}
 function openSettings() {
   $('.ov')?.remove();
   const has = !!token();
@@ -595,20 +613,38 @@ function openSettings() {
     return h('label', { class: 'switch' }, i, h('span'));
   };
   const tokIn = h('input', { class: 'in', type: 'password', placeholder: has ? '저장된 토큰이 있어요 (변경 시 입력)' : 'GitHub 토큰', autocomplete: 'off' });
-  const repoIn = h('input', { class: 'in', placeholder: '아이디/저장소 (예: raetim/raetim.github.io)', value: cfg.owner && cfg.repo ? `${cfg.owner}/${cfg.repo}` : '' });
-  const brIn = h('input', { class: 'in', placeholder: '브랜치', value: cfg.branch || 'main' });
   const msg = h('div', { class: 'msg' });
+  const errText = (code, t) => ({
+    auth: '토큰이 올바르지 않거나 만료되었어요.',
+    repo: `${t ? t.owner + '/' + t.repo : '저장소'} 저장소를 찾지 못했어요. 토큰에 이 저장소의 Contents 읽기/쓰기 권한이 있는지 확인해 주세요.`,
+    perm: '쓰기 권한이 없어요. Contents 권한을 읽기/쓰기로 바꿔 주세요.',
+    where: '이 페이지가 깃허브 페이지 주소(아이디.github.io)에서 열려 있어야 연결할 수 있어요.',
+    net: '연결 중 오류가 났어요. 잠시 후 다시 시도해 주세요.'
+  }[code] || '연결하지 못했어요.');
   const saveBtn = h('button', { class: 'btn', onclick: async () => {
-    const [o, r] = repoIn.value.trim().split('/');
-    if (!o || !r) { msg.textContent = '저장소를 아이디/저장소 형식으로 입력해 주세요.'; return; }
+    const tok = tokIn.value.trim();
+    if (!tok) { msg.textContent = '토큰을 입력해 주세요.'; return; }
     const prevTok = token(), prevCfg = { ...cfg };
-    if (tokIn.value.trim()) localStorage.setItem('lk_token', tokIn.value.trim());
-    if (!token()) { msg.textContent = '토큰을 입력해 주세요.'; return; }
-    cfg = { ...cfg, owner: o, repo: r, branch: brIn.value.trim() || 'main' };
+    localStorage.setItem('lk_token', tok);
     msg.textContent = '확인 중...';
+    let target = null;
     try {
+      target = urlRepo();
+      if (!target) {
+        const ur = await fetch('https://api.github.com/user', { cache: 'no-store', headers: { Authorization: `Bearer ${tok}`, Accept: 'application/vnd.github+json' } });
+        if (ur.status === 401) throw 'auth';
+        if (!ur.ok) throw 'net';
+        const login = (await ur.json()).login;
+        target = { owner: login, repo: `${login}.github.io` };
+      }
+      cfg = { ...cfg, ...target };
       const res = await gh('');
-      if (!res.ok) throw new Error();
+      if (res.status === 401) throw 'auth';
+      if (res.status === 404 || res.status === 403) throw (urlRepo() ? 'repo' : 'where');
+      if (!res.ok) throw 'net';
+      const info = await res.json();
+      if (info.permissions && info.permissions.push === false) throw 'perm';
+      cfg.branch = info.default_branch || 'main';
       localStorage.setItem('lk_cfg', JSON.stringify(cfg));
       await load();
       render();
@@ -617,27 +653,32 @@ function openSettings() {
     } catch (e) {
       if (prevTok) localStorage.setItem('lk_token', prevTok); else localStorage.removeItem('lk_token');
       cfg = prevCfg;
-      msg.textContent = '연결하지 못했어요. 토큰과 저장소를 확인해 주세요.';
+      msg.textContent = errText(typeof e === 'string' ? e : 'net', target);
     }
-  } }, '저장');
+  } }, '연결');
   const sec = h('div', { class: 'sec' },
     h('strong', {}, '토큰 설정'),
-    tokIn, repoIn, brIn,
-    h('small', {}, 'GitHub 토큰은 이 기기에만 저장돼요. 해당 저장소의 Contents 읽기/쓰기 권한만 준 토큰을 권장해요.'),
+    tokIn,
     h('div', { class: 'row2' }, saveBtn,
       has && h('button', { class: 'btn ghost', onclick: () => {
         localStorage.removeItem('lk_token'); editing = false; localStorage.setItem('lk_edit', '0');
         render(); ov.remove();
       } }, '토큰 삭제')),
     msg);
+  const titleIn = h('input', { class: 'in', placeholder: '링크', style: 'max-width:200px;text-align:right' });
+  titleIn.value = data.siteTitle || '';
+  titleIn.addEventListener('input', () => { data.siteTitle = titleIn.value; document.title = data.siteTitle || '링크'; touch(); });
   const sheet = h('div', { class: 'sheet' },
     h('h2', {}, '설정'),
     h('div', { class: 'srow' }, h('span', {}, '다크 모드'), sw(document.documentElement.dataset.theme === 'dark', v => setTheme(v ? 'dark' : 'light'))),
     has && h('div', { class: 'srow' }, h('span', {}, '편집 모드'), sw(editing, v => { editing = v; localStorage.setItem('lk_edit', v ? '1' : '0'); render(); })),
+    has && h('div', { class: 'srow' }, h('span', {}, '사이트명'), titleIn),
+    has && h('div', { class: 'srow' }, h('span', {}, '하단 버튼'), sw(data.showButtons, v => { data.showButtons = v; touch(); render(); })),
     sec);
   ov.append(sheet);
   document.body.append(ov);
 }
+
 $('#gear').onclick = openSettings;
 
 /* ---------- 시작 ---------- */
