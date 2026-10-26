@@ -1,6 +1,7 @@
 {
   "siteTitle": "",
-  "showButtons": false,
+  "showButtons": true,
+  "buttonsPos": "bottom",
   "profile": {
     "icon": "",
     "name": "",
