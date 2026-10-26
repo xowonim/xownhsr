@@ -8,31 +8,7 @@
     "en": "",
     "jp": ""
   },
-  "blocks": [
-    {
-      "id": "2sxs9cw",
-      "type": "text",
-      "text": ""
-    },
-    {
-      "id": "kiupqbk",
-      "type": "illust",
-      "image": "",
-      "title": "",
-      "link": ""
-    },
-    {
-      "id": "2lbcful",
-      "type": "gallery",
-      "items": [
-        {
-          "image": "",
-          "title": "",
-          "link": ""
-        }
-      ]
-    }
-  ],
+  "blocks": [],
   "buttons": [
     {
       "icon": "",
