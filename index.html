@@ -253,10 +253,6 @@ function loadCfg() {
   c.path = c.path || 'data.json';
   return c;
 }
-if (localStorage.getItem('lk_ver') !== '2') {
-  ['lk_cache', 'lk_draft', 'lk_dirty', 'lk_cfg'].forEach(k => localStorage.removeItem(k));
-  localStorage.setItem('lk_ver', '2');
-}
 let cfg = loadCfg();
 let data = defaults();
 let sha = null, dirty = false, saving = false, timer = null;
