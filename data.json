@@ -7,31 +7,7 @@
     "en": "@id",
     "jp": ""
   },
-  "blocks": [
-    {
-      "id": "5h99ezj",
-      "type": "text",
-      "text": ""
-    },
-    {
-      "id": "55rqw4t",
-      "type": "illust",
-      "image": "",
-      "title": "",
-      "link": ""
-    },
-    {
-      "id": "f37ki88",
-      "type": "gallery",
-      "items": [
-        {
-          "image": "",
-          "title": "",
-          "link": ""
-        }
-      ]
-    }
-  ],
+  "blocks": [],
   "buttons": [
     {
       "icon": "",
