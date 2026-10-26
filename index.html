@@ -30,7 +30,7 @@ button{font-family:inherit}
 /* top bar */
 .gear{
   position:fixed;top:14px;right:14px;width:42px;height:42px;border-radius:50%;
-  border:0;background:rgba(255,255,255,.2);color:#fff;display:grid;place-items:center;cursor:pointer;z-index:20;
+  border:1.5px solid rgba(255,255,255,.85);background:none;color:#fff;display:grid;place-items:center;cursor:pointer;z-index:20;
 }
 .gear:active{transform:scale(.94)}
 .status{
@@ -89,11 +89,11 @@ button{font-family:inherit}
 .sns{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
 .sns.top{margin-top:26px;margin-bottom:0}
 .bbtn{
-  background:var(--card);border-radius:18px;padding:14px 6px;display:flex;flex-direction:column;align-items:center;gap:10px;
+  background:var(--card);border-radius:18px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:10px;
   text-decoration:none;color:var(--ink);font-size:13px;font-weight:600;min-width:0;
 }
 a.bbtn:active{transform:scale(.97)}
-.b-icon{width:76px;height:76px;border-radius:22px}
+.b-icon{width:100%;aspect-ratio:1/1;border-radius:18px}
 .b-label{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* editing UI */
@@ -117,24 +117,25 @@ a.bbtn:active{transform:scale(.97)}
   padding:8px 10px;font:inherit;font-size:13px;outline:none;text-align:center;
 }
 .in:focus{border-color:var(--accent)}
-.eblock .in{background:transparent;border:1px solid var(--edge);border-radius:0}
+.eblock .in{background:transparent;border:1px solid var(--edge);border-radius:0;text-align:left}
 .eblock textarea.in{text-align:left;resize:vertical;min-height:96px;line-height:1.6;font-size:14px}
-.preview{border-top:1px solid var(--edge);padding-top:10px;font-size:14px}
 .pick{
-  background:transparent;display:grid;place-items:center;color:var(--mut);cursor:pointer;
+  position:relative;background:transparent;display:grid;place-items:center;color:var(--mut);cursor:pointer;
   border:1px solid var(--edge);border-radius:0;overflow:hidden;
 }
 .pick.r169{aspect-ratio:16/9}
 .pick.r11{aspect-ratio:1/1}
-.pick.ic{width:76px;height:76px;border-radius:22px;margin:0 auto;border:1.5px solid var(--edge);color:var(--mut)}
-.g-edit{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pick.ic{width:100%;aspect-ratio:1/1;border-radius:18px;border:1.5px solid var(--edge);color:var(--mut)}
+.g-edit{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-items:start}
 .cell{background:none;display:flex;flex-direction:column;gap:4px;min-width:0}
-.eblock .cell .in{border:0;background:transparent;font-size:12px;padding:5px 4px}
+.eblock .cell .in{border:0;background:transparent;font-size:12px;padding:5px 4px;text-align:center}
 .cell .row{display:flex;gap:0;justify-content:center}
-.addcell{border:1px solid var(--edge);background:transparent;color:var(--mut);border-radius:0;aspect-ratio:1/1;display:grid;place-items:center;cursor:pointer}
+.addcell{border:0;background:transparent;color:var(--mut);border-radius:0;aspect-ratio:1/1;width:100%;align-self:start;display:grid;place-items:center;cursor:pointer;padding:0}
+.addcell.solo{aspect-ratio:auto;width:auto;padding:10px 28px}
+.g-empty{display:grid;place-items:center;padding:14px 0}
 .bcard{background:var(--card);border-radius:18px;padding:12px 8px;display:flex;flex-direction:column;gap:8px;min-width:0}
 .bcard .in{background:transparent;border:1px solid var(--edge);color:var(--ink);font-size:12px;padding:6px 8px}
-@media(max-width:480px){.g-edit{grid-template-columns:repeat(2,1fr)}.sns.editing{grid-template-columns:1fr}}
+@media(max-width:480px){.sns.editing{grid-template-columns:1fr}}
 
 /* overlay / modal */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:grid;place-items:center;padding:16px}
@@ -144,8 +145,8 @@ a.bbtn:active{transform:scale(.97)}
 }
 .sheet.small{max-width:300px;text-align:center;display:flex;flex-direction:column;gap:0;padding:14px 12px}
 .sheet h2{margin:0 0 14px;font-size:17px}
-.sheet.small h2{margin:0;padding:4px 0 12px;border-bottom:1px solid var(--edge)}
-.opt{border:0;border-bottom:1px solid var(--edge);background:none;color:var(--ink);border-radius:0;padding:14px;font-size:15px;font-weight:600;cursor:pointer}
+.sheet.small h2{margin:0;padding:4px 0 10px;font-size:15px}
+.opt{border:0;border-bottom:1px solid var(--edge);background:none;color:var(--ink);border-radius:0;padding:13px 14px;font-size:14px;font-weight:500;cursor:pointer}
 .opt:last-child{border-bottom:0}
 .opt.danger{color:#c0392b}
 .srow{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px;gap:10px}
@@ -165,7 +166,7 @@ a.bbtn:active{transform:scale(.97)}
 .switch input:checked+span::before{transform:translateX(20px)}
 .seg{position:relative;display:grid;grid-template-columns:1fr 1fr;background:var(--soft);border-radius:999px;padding:3px;width:112px}
 .seg button{background:none;border:0;position:relative;z-index:1;font-size:12px;font-weight:600;padding:5px 0;color:var(--ink);cursor:pointer}
-.seg .thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);background:var(--box);border-radius:999px;transition:transform .25s;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.seg .thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);background:var(--box);border-radius:999px;transition:transform .25s}
 .seg.r .thumb{transform:translateX(100%)}
 
 /* lightbox */
@@ -316,6 +317,7 @@ let editing = localStorage.getItem('lk_edit') === '1';
 const token = () => localStorage.getItem('lk_token') || '';
 const imgCache = new Map();
 const pending = new Map();
+let known = new Set();
 
 /* ---------- 저장 상태 표시 ---------- */
 let hideT = null;
@@ -329,6 +331,42 @@ function setStatus(kind, text) {
   }
   else if (kind === 'error') { el.textContent = text || '저장 실패'; el.className = 'status on err'; }
   else el.className = 'status';
+}
+
+/* ---------- 쓰지 않는 이미지 정리 ---------- */
+function refs(d) {
+  const s = new Set();
+  const add = p => { if (p && !/^(https?:|data:|blob:)/.test(p)) s.add(p); };
+  add(d.profile && d.profile.icon);
+  (d.blocks || []).forEach(b => {
+    if (b.type === 'illust') add(b.image);
+    if (b.type === 'gallery') (b.items || []).forEach(i => add(i.image));
+  });
+  (d.buttons || []).forEach(x => add(x.icon));
+  return s;
+}
+async function cleanup(snap) {
+  const live = new Set([...refs(JSON.parse(snap)), ...refs(data)]);
+  let trash;
+  try { trash = new Set(JSON.parse(localStorage.getItem('lk_trash') || '[]')); } catch (e) { trash = new Set(); }
+  known.forEach(p => { if (!live.has(p)) trash.add(p); });
+  known = new Set(live);
+  [...trash].forEach(p => { if (live.has(p)) trash.delete(p); });
+  for (const p of [...trash]) {
+    if (!/^images\//.test(p)) { trash.delete(p); continue; }
+    try {
+      const g = await gh(`contents/${p}?ref=${encodeURIComponent(cfg.branch)}`);
+      if (g.status === 404) { trash.delete(p); continue; }
+      if (!g.ok) continue;
+      const d = await gh(`contents/${p}`, {
+        method: 'DELETE',
+        body: JSON.stringify({ message: 'delete image', sha: (await g.json()).sha, branch: cfg.branch })
+      });
+      if (d.ok) { trash.delete(p); imgCache.delete(p); }
+    } catch (e) {}
+  }
+  if (trash.size) localStorage.setItem('lk_trash', JSON.stringify([...trash]));
+  else localStorage.removeItem('lk_trash');
 }
 
 /* ---------- GitHub ---------- */
@@ -374,6 +412,7 @@ async function load() {
       if (r.ok) { data = merge(await r.json()); ok = true; }
     } catch (e) {}
   }
+  known = refs(data);
   if (ok) { try { localStorage.setItem('lk_cache', JSON.stringify(data)); } catch (e) {} }
 }
 function scheduleSave(ms = 1200) { clearTimeout(timer); timer = setTimeout(save, ms); }
@@ -394,7 +433,7 @@ async function putFile(snapshot) {
   });
 }
 async function save() {
-  if (!token() || !dirty) return;
+  if (!token() || !dirty) { if (!saving) setStatus(''); return; }
   if (saving) { scheduleSave(800); return; }
   saving = true; setStatus('saving');
   try {
@@ -406,6 +445,7 @@ async function save() {
     if (JSON.stringify(data, null, 2) === snap) {
       dirty = false; localStorage.removeItem('lk_dirty'); setStatus('saved');
     } else scheduleSave(300);
+    try { await cleanup(snap); } catch (e) {}
   } catch (e) { setStatus('error'); scheduleSave(5000); }
   finally { saving = false; }
 }
@@ -445,11 +485,11 @@ async function uploadBlob(blob) {
   const ext = (blob.type.split('/')[1] || 'png').replace('jpeg', 'jpg').replace('svg+xml', 'svg');
   const path = `images/${Date.now()}-${uid()}.${ext}`;
   setStatus('saving');
-  const r = await gh(`contents/${path}`, {
-    method: 'PUT',
-    body: JSON.stringify({ message: 'upload image', content: await blobB64(blob), branch: cfg.branch })
-  });
+  const body = JSON.stringify({ message: 'upload image', content: await blobB64(blob), branch: cfg.branch });
+  let r = await gh(`contents/${path}`, { method: 'PUT', body });
+  if (r.status === 409) { await new Promise(res => setTimeout(res, 900)); r = await gh(`contents/${path}`, { method: 'PUT', body }); }
   if (!r.ok) throw new Error('upload');
+  known.add(path);
   imgCache.set(path, URL.createObjectURL(blob));
   return path;
 }
@@ -630,7 +670,7 @@ function picker(path, cls, cb, opt, crop) {
   const el = h('div', { class: 'pick ' + cls, onclick: () => path ? imgMenu(cb, opt) : pick(cb, opt) });
   if (path) {
     if (crop && crop.ar) el.style.aspectRatio = String(crop.ar);
-    const f = h('div', { class: 'pimg', style: 'width:100%;height:100%' });
+    const f = h('div', { class: 'pimg', style: 'position:absolute;inset:0' });
     applyImg(f, path);
     applyCrop(f, crop);
     el.append(f);
@@ -753,9 +793,7 @@ function editBlock(b, i) {
   const wrap = h('div', { class: 'eblock' }, head);
   if (b.type === 'text') {
     const ta = h('textarea', { class: 'in', placeholder: '내용을 입력하세요' });
-    const prev = h('div', { class: 'preview t-text' });
-    bind(ta, b, 'text', () => prev.innerHTML = md(b.text));
-    prev.innerHTML = md(b.text || '');
+    bind(ta, b, 'text');
     const tool = (html, label, l, r, ph) => h('button', { class: 'tb', type: 'button', 'aria-label': label, html, onclick: () => wrapSel(ta, l, r, ph) });
     wrap.append(
       h('div', { class: 'tools' },
@@ -765,7 +803,7 @@ function editBlock(b, i) {
         tool('<s>S</s>', '취소선', '~~', '~~'),
         tool(ico('link', 2.2, 16), '링크', '[', '](https://)'),
         tool(ico('spoiler', 2.2, 16), '스포일러', '||', '||', '가릴 문구')),
-      ta, prev);
+      ta);
   } else if (b.type === 'illust') {
     wrap.append(
       picker(b.image, 'r169', (v, c) => { b.image = v; b.crop = c || null; }, { mode: 'illust' }, b.crop),
@@ -785,8 +823,13 @@ function editBlock(b, i) {
           ib('right', '뒤로', () => move(b.items, k, 1), 16),
           ib('x', '삭제', () => { b.items.splice(k, 1); touch(); render(); }, 16))));
     });
-    g.append(h('button', { class: 'addcell', 'aria-label': '추가', html: ico('plus', 1.8, 16), onclick: () => { b.items.push({ image: '', title: '', link: '' }); touch(); render(); } }));
-    wrap.append(g);
+    const addItem = () => { b.items.push({ image: '', title: '', link: '' }); touch(); render(); };
+    if (!b.items.length) {
+      wrap.append(h('div', { class: 'g-empty' }, h('button', { class: 'addcell solo', type: 'button', 'aria-label': '추가', html: ico('plus', 1.8, 18), onclick: addItem })));
+    } else {
+      g.append(h('button', { class: 'addcell', type: 'button', 'aria-label': '추가', html: ico('plus', 1.8, 18), onclick: addItem }));
+      wrap.append(g);
+    }
   }
   return wrap;
 }
@@ -803,7 +846,7 @@ function renderButtons() {
     } else {
       g.append(h('div', { class: 'bcard' },
         picker(btn.icon, 'ic', v => btn.icon = v, { mode: 'square', max: 512 }),
-        bind(h('input', { class: 'in', placeholder: '글' }), btn, 'label'),
+        bind(h('input', { class: 'in', placeholder: '제목' }), btn, 'label'),
         bind(h('input', { class: 'in', placeholder: '링크' }), btn, 'link')));
     }
   });
