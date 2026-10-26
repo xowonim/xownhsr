@@ -50,13 +50,13 @@ button{font-family:inherit}
 }
 .avatar.edit{cursor:pointer}
 .avatar.empty{background:var(--soft);display:grid;place-items:center;color:var(--mut)}
-.nick{margin:0;font-size:28px;font-weight:700;color:var(--fg);letter-spacing:-.02em}
+.nick{margin:0;font-size:24px;font-weight:700;color:var(--fg);letter-spacing:-.02em}
 .nick-sub{margin:6px 0 0;font-size:13px;color:var(--sub)}
 .p-in{
   display:block;width:100%;max-width:300px;margin:4px auto 0;border:0;border-radius:0;
   background:transparent;color:var(--fg);text-align:center;font:inherit;padding:6px 10px;outline:none;
 }
-.p-in.big{font-size:28px;font-weight:700;letter-spacing:-.02em}
+.p-in.big{font-size:24px;font-weight:700;letter-spacing:-.02em}
 .p-in.small{font-size:13px;color:var(--fg)}
 .p-in::placeholder{color:var(--fg-ph)}
 
@@ -65,20 +65,20 @@ button{font-family:inherit}
   background:var(--box);border-radius:0;margin-top:22px;padding:20px;
   display:flex;flex-direction:column;gap:18px;text-align:center;
 }
-.t-text{font-size:15px;line-height:1.75;word-break:keep-all;overflow-wrap:anywhere}
+.t-text{font-size:14px;line-height:1.7;word-break:keep-all;overflow-wrap:anywhere}
 .t-text a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
 .spoiler{background:var(--spoiler);color:transparent;border-radius:0;cursor:pointer;user-select:none;padding:0 2px}
 .spoiler.revealed{background:var(--soft);color:inherit;user-select:auto}
 
 .pimg{
-  background:center/cover no-repeat var(--soft);
+  background:center/cover no-repeat;
   -webkit-touch-callout:none;user-select:none;-webkit-user-select:none;
 }
 .illust{display:block;position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:0;cursor:zoom-in;text-decoration:none;-webkit-touch-callout:none}
 .illust.link{cursor:pointer}
 .illust .fill{position:absolute;inset:0}
 .illust .shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.78),rgba(0,0,0,0) 55%);pointer-events:none}
-.illust .cap{position:absolute;left:12px;bottom:10px;right:12px;color:#fff;font-size:14px;font-weight:600;text-align:left;pointer-events:none}
+.illust .cap{position:absolute;left:12px;bottom:10px;right:12px;color:#fff;font-size:16px;font-weight:600;text-align:left;pointer-events:none}
 
 .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .g-cell{display:block;text-decoration:none;-webkit-touch-callout:none;min-width:0}
@@ -122,11 +122,11 @@ a.bbtn:active{transform:scale(.97)}
 .eblock textarea.in{text-align:left;resize:vertical;min-height:96px;line-height:1.6;font-size:14px}
 .pick{
   position:relative;background:transparent;display:grid;place-items:center;color:var(--mut);cursor:pointer;
-  border:1px solid var(--edge);border-radius:0;overflow:hidden;
+  border:.5px solid var(--edge);border-radius:0;overflow:hidden;
 }
 .pick.r169{aspect-ratio:16/9}
 .pick.r11{aspect-ratio:1/1}
-.pick.ic{width:100%;aspect-ratio:1/1;border-radius:0;border:1.5px solid var(--edge);color:var(--mut)}
+.pick.ic{width:100%;aspect-ratio:1/1;border-radius:0;border:.5px solid var(--edge);color:var(--mut)}
 .g-edit{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-items:start}
 .cell{background:none;display:flex;flex-direction:column;gap:4px;min-width:0}
 .eblock .cell .in{border:0;background:transparent;font-size:12px;padding:5px 4px;text-align:center}
@@ -793,11 +793,14 @@ function viewBlock(b) {
     return el;
   }
   if (b.type === 'gallery') {
-    const items = (b.items || []).filter(x => x.image);
-    if (!items.length) return null;
+    const all = b.items || [];
+    let last = -1;
+    all.forEach((x, i) => { if (x.image || (x.title || '').trim()) last = i; });
+    if (last < 0) return null;
+    const items = all.slice(0, last + 1);
     const g = h('div', { class: 'gallery' });
     items.forEach(it => {
-      const link = normLink(it.link);
+      const link = (it.image || it.title) ? normLink(it.link) : '';
       const c = h(link ? 'a' : 'div', { class: 'g-cell' + (link ? ' link' : ''), draggable: 'false', ...(link ? { href: link, target: '_blank', rel: 'noopener noreferrer' } : {}) });
       const im = h('div', { class: 'pimg sq' });
       applyImg(im, it.image);
