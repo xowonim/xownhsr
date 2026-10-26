@@ -8,7 +8,13 @@
     "en": "",
     "jp": ""
   },
-  "blocks": [],
+  "blocks": [
+    {
+      "id": "2sxs9cw",
+      "type": "text",
+      "text": ""
+    }
+  ],
   "buttons": [
     {
       "icon": "",
