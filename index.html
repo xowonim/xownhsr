@@ -170,9 +170,10 @@ a.bbtn:active{transform:scale(.97)}
 .seg .thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);background:var(--box);border-radius:999px;transition:transform .25s}
 .seg.r .thumb{transform:translateX(100%)}
 
-.swatch{width:120px;height:32px;border-radius:8px;border:1px solid var(--edge);padding:0;cursor:pointer}
-.sheet.small.cw{gap:12px}
-.cw-pick{width:100%;height:56px;border:1px solid var(--edge);border-radius:10px;padding:2px;background:none;cursor:pointer}
+.swatch{-webkit-appearance:none;appearance:none;width:220px;max-width:62%;height:34px;border:1px solid var(--edge);border-radius:0;padding:0;background:none;cursor:pointer}
+.swatch::-webkit-color-swatch-wrapper{padding:0}
+.swatch::-webkit-color-swatch{border:0;border-radius:0}
+.swatch::-moz-color-swatch{border:0;border-radius:0}
 
 /* lightbox */
 .lb{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:60;display:grid;place-items:center;cursor:zoom-out}
@@ -1013,24 +1014,14 @@ function openSettings() {
     h('button', { type: 'button', onclick: () => setPos('top') }, '상단'),
     h('button', { type: 'button', onclick: () => setPos('bottom') }, '하단'));
   function setPos(p) { data.buttonsPos = p; seg.classList.toggle('r', p === 'bottom'); touch(); render(); }
-  const swatch = h('button', { class: 'swatch', type: 'button', 'aria-label': '배경색', style: `background:${data.bgColor || '#8aad78'}` });
-  swatch.onclick = () => {
-    const base = data.bgColor || '#8aad78';
-    const ov2 = h('div', { class: 'ov', style: 'z-index:55', onclick: e => { if (e.target === ov2) ov2.remove(); } });
-    const pickIn = h('input', { type: 'color', class: 'cw-pick' });
-    pickIn.value = base;
-    const codeIn = h('input', { class: 'in', placeholder: '#8aad78', maxlength: '7', style: 'text-align:center' });
-    codeIn.value = base;
-    const apply = hex => { data.bgColor = hex; swatch.style.background = hex || '#8aad78'; applyPalette(); touch(); };
-    pickIn.addEventListener('input', () => { codeIn.value = pickIn.value; apply(pickIn.value); });
-    codeIn.addEventListener('input', () => { const v = normHex(codeIn.value); if (v) { pickIn.value = v; apply(v); } });
-    ov2.append(h('div', { class: 'sheet small cw' },
-      h('h2', {}, '배경색'), pickIn, codeIn,
-      h('div', { class: 'row2' },
-        h('button', { class: 'btn ghost', type: 'button', onclick: () => { pickIn.value = '#8aad78'; codeIn.value = '#8aad78'; apply(''); } }, '기본값'),
-        h('button', { class: 'btn', type: 'button', onclick: () => ov2.remove() }, '확인'))));
-    document.body.append(ov2);
-  };
+  const swatch = h('input', { class: 'swatch', type: 'color', 'aria-label': '배경색' });
+  swatch.value = data.bgColor || '#8aad78';
+  swatch.addEventListener('input', () => {
+    const v = swatch.value.toLowerCase();
+    data.bgColor = v === '#8aad78' ? '' : v;
+    applyPalette();
+    touch();
+  });
   const sheet = h('div', { class: 'sheet' },
     h('h2', {}, '설정'),
     h('div', { class: 'srow' }, h('span', {}, '다크 모드'), sw(document.documentElement.dataset.theme === 'dark', v => setTheme(v ? 'dark' : 'light'))),
